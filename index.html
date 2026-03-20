@@ -5336,23 +5336,37 @@
     ['s1', 's2', 's3', 's4'].forEach(id => { const el = document.getElementById(id); if (el) counterObs.observe(el); });
 
     /* ─── FLOAT BUTTON with pulse effect ─── */
-    let downloadCount = 4372;
-    function handleFloatDownload() {
-      downloadCount++;
-      const counterEl = document.getElementById('floatCounterText');
-      counterEl.textContent = downloadCount.toLocaleString('en-IN') + ' Farmers Joined';
-      counterEl.classList.remove('counter-pulse');
-      void counterEl.offsetWidth; // trigger reflow
-      counterEl.classList.add('counter-pulse');
-      const btn = document.querySelector('.float-apk');
-      btn.style.transform = 'scale(0.93)';
-      setTimeout(() => { btn.style.transform = ''; }, 200);
-      // Ripple effect
-      const ripple = document.createElement('span');
-      ripple.style.cssText = `position:fixed;pointer-events:none;border-radius:50%;background:rgba(26,92,56,0.2);width:60px;height:60px;z-index:9999;animation:rippleOut 0.6s ease forwards;transform:translate(-50%,-50%);bottom:36px;right:44px;`;
-      document.body.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 600);
-    }
+    // Load count from localStorage, or start from 0 if first visit
+let downloadCount = parseInt(localStorage.getItem('agrobrain_downloads') || '0', 10);
+
+// Show the current count immediately on page load
+function updateCounterDisplay() {
+  const text = downloadCount.toLocaleString('en-IN') + ' Farmers Joined';
+  const el = document.getElementById('floatCounterText');
+  if (el) el.textContent = text;
+}
+updateCounterDisplay();
+
+function handleFloatDownload() {
+  downloadCount++;
+  // Save to localStorage so it persists across visits
+  localStorage.setItem('agrobrain_downloads', downloadCount);
+  
+  const counterEl = document.getElementById('floatCounterText');
+  counterEl.textContent = downloadCount.toLocaleString('en-IN') + ' Farmers Joined';
+  counterEl.classList.remove('counter-pulse');
+  void counterEl.offsetWidth;
+  counterEl.classList.add('counter-pulse');
+  
+  const btn = document.querySelector('.float-apk');
+  btn.style.transform = 'scale(0.93)';
+  setTimeout(() => { btn.style.transform = ''; }, 200);
+  
+  const ripple = document.createElement('span');
+  ripple.style.cssText = `position:fixed;pointer-events:none;border-radius:50%;background:rgba(26,92,56,0.2);width:60px;height:60px;z-index:9999;animation:rippleOut 0.6s ease forwards;transform:translate(-50%,-50%);bottom:36px;right:44px;`;
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
     // Add ripple keyframe
     const styleSheet = document.createElement('style');
     styleSheet.textContent = `@keyframes rippleOut { from{width:10px;height:10px;opacity:0.8} to{width:80px;height:80px;opacity:0} }`;
